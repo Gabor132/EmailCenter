@@ -12,10 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
-import javax.crypto.KeyGeneratorSpi;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JOptionPane;
 import javax.xml.bind.DatatypeConverter;
@@ -34,15 +31,11 @@ public abstract class Security {
         
         output += salt+pepper+input+salt+pepper;
         
-        
         try {
             MessageDigest boillingPot = MessageDigest.getInstance("SHA-256");
             byte[] bytes = boillingPot.digest(output.getBytes());
             
-            output = "";
-            for(byte auxB:bytes){
-                output += (char)auxB;
-            }
+            output = new String(bytes);
             
         } catch (NoSuchAlgorithmException ex) {
             JOptionPane.showMessageDialog(null, "Failed to hash user password, please contact support", "Error", JOptionPane.ERROR_MESSAGE);
