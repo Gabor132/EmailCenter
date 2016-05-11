@@ -5,13 +5,19 @@
  */
 package Interface;
 
+import Database.DatabaseHandler;
 import User.Accounts;
-import User.User;
+import User.Friends;
+import User.Users;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.ListModel;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
@@ -23,7 +29,7 @@ import org.apache.commons.mail.SimpleEmail;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    private static User loggedInUser = null;
+    private static Users loggedInUser = null;
     
     private final Object loginSignal;
     
@@ -41,13 +47,47 @@ public class MainFrame extends javax.swing.JFrame {
         List<Accounts> accounts = loggedInUser.getAccounts();
         this.accountBox.removeAllItems();
         for(Accounts aux:accounts){
-            this.accountBox.addItem(aux.getEmail());
+            this.accountBox.addItem(aux.getEmailAddress());
         }
+        setupFriendsList();
     }
     
-    public static void setUser(User newUser){
+    public final void setupFriendsList(){
+        Accounts account = getSelectedAccount();
+        List<Friends> friends = account.getFriends();
+        DefaultListModel<String> friendsModel = new DefaultListModel<>();
+        for(Friends aux:friends){
+            friendsModel.addElement(aux.getEmailAddress());
+        }
+        this.friendsList.setModel(friendsModel);
+    }
+    
+    public static void setUser(Users newUser){
         loggedInUser = newUser;
-        
+    }
+    
+    public Accounts getSelectedAccount(){
+        Accounts selectedAccount = null;
+        List<Accounts> accounts = loggedInUser.getAccounts();
+        for(Accounts aux:accounts){
+            if(aux.getEmailAddress().equals((String)accountBox.getSelectedItem())){
+                selectedAccount = aux;
+                break;
+            }
+        }
+        return selectedAccount;
+    }
+    
+    public Friends getSelectedFriend(){
+        Friends selectedFriend = null;
+        List<Friends> friends = getSelectedAccount().getFriends();
+        for(Friends aux:friends){
+            if(aux.getEmailAddress().equals(friendsList.getSelectedValue())){
+                selectedFriend = aux;
+                break;
+            }
+        }
+        return selectedFriend;
     }
 
     /**
@@ -113,6 +153,11 @@ public class MainFrame extends javax.swing.JFrame {
         subjectLabel.setText("Subject:");
 
         addReceiverButton.setText("Add Receiver");
+        addReceiverButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addReceiverButtonActionPerformed(evt);
+            }
+        });
 
         deleteFriendButton.setText("Delete Friend");
         deleteFriendButton.addActionListener(new java.awt.event.ActionListener() {
@@ -156,44 +201,42 @@ public class MainFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(emailContentScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addGap(149, 149, 149))
-            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(emailContentScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(71, 71, 71)
+                        .addComponent(subjectField))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(currentAccountLabel)
                             .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(currentAccountLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(accountBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(addAccountButton))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(attachFileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(detachFileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 130, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(21, 21, 21)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(subjectLabel)
                                     .addComponent(toLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(toField)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(0, 0, Short.MAX_VALUE)
-                                                .addComponent(accountBox, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(addAccountButton)))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(addReceiverButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(deleteAccountButton, javax.swing.GroupLayout.Alignment.TRAILING)))
-                                    .addComponent(subjectField)))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(toField)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(attachFileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(detachFileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 209, Short.MAX_VALUE)
-                        .addComponent(deleteFriendButton)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(addReceiverButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(deleteAccountButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(deleteFriendButton, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(friendsScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(friendsScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -221,8 +264,9 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(attachFileButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(deleteFriendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(detachFileButton)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(detachFileButton)
+                                .addComponent(deleteFriendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(friendsScroll))
                 .addContainerGap())
@@ -232,7 +276,19 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void deleteFriendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteFriendButtonActionPerformed
-        // TODO add your handling code here:
+        Friends toBeDeleted = getSelectedFriend();
+        if(toBeDeleted == null){
+            JOptionPane.showMessageDialog(null, "You must select a friend for deletion",
+                    "Delete Friend", JOptionPane.INFORMATION_MESSAGE);
+            return ;
+        }
+        Accounts account = toBeDeleted.getAccount();
+        if(toBeDeleted.deleteFriendFromDatabase()){
+            account.deleteFriend(toBeDeleted);
+            JOptionPane.showMessageDialog(null, "Succesfully deleted friend",
+                    "Delete Friend", JOptionPane.INFORMATION_MESSAGE);
+            setupFriendsList();
+        }
     }//GEN-LAST:event_deleteFriendButtonActionPerformed
 
     private void signOutMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signOutMenuMouseClicked
@@ -250,17 +306,22 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_addAccountButtonActionPerformed
 
     private void deleteAccountButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteAccountButtonActionPerformed
-        // TODO add your handling code here:
+        Accounts toBeDeleted = getSelectedAccount();
+        if(toBeDeleted == null){
+            JOptionPane.showMessageDialog(null, "You must select and account for deletion",
+                    "Delete Account", JOptionPane.INFORMATION_MESSAGE);
+            return ;
+        }
+        if(toBeDeleted.deleteAccountFromDatabase()){
+            loggedInUser.deleteAccount(toBeDeleted);
+            JOptionPane.showMessageDialog(null, "Succesfully deleted account",
+                    "Delete Account", JOptionPane.INFORMATION_MESSAGE);
+            setupAccountBox();
+        }
     }//GEN-LAST:event_deleteAccountButtonActionPerformed
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
-        Accounts selectedAccount = null;
-        List<Accounts> accounts = loggedInUser.getAccounts();
-        for(Accounts aux:accounts){
-            if(aux.getEmail().equals((String)accountBox.getSelectedItem())){
-                selectedAccount = aux;
-            }
-        }
+        Accounts selectedAccount = getSelectedAccount();
         if(selectedAccount == null){
             JOptionPane.showMessageDialog(null, "Please add an Account", "Send Email", JOptionPane.INFORMATION_MESSAGE);
             return ;
@@ -281,21 +342,42 @@ public class MainFrame extends javax.swing.JFrame {
             Email email = new SimpleEmail();
             email.setHostName("smtp.gmail.com");
             email.setSmtpPort(465);
-            email.setAuthenticator(new DefaultAuthenticator(selectedAccount.getEmail(), selectedAccount.getDecryptedPassword()));
+            email.setAuthenticator(new DefaultAuthenticator(selectedAccount.getEmailAddress(), selectedAccount.getDecryptedPassword()));
             email.setSSL(true);
-            email.setFrom(selectedAccount.getEmail());
+            email.setFrom(selectedAccount.getEmailAddress());
             email.setSubject(subjectField.getText());
             email.setMsg(emailContentArea.getText());
             email.addTo(toField.getText());
             email.send();
         } catch (EmailException ex) {
             System.err.println("Failed "+ex.getMessage());
-            ex.printStackTrace();
             return ;
         }
         JOptionPane.showMessageDialog(null, "Email was sent succesfully", "Send Email", JOptionPane.INFORMATION_MESSAGE);
-
+        List<Friends> friends = selectedAccount.getFriends();
+        for(Friends aux:friends){
+            if(aux.getEmailAddress().equals(toField.getText())){
+                return;
+            }
+        }
+        Friends friend = new Friends(toField.getText(), selectedAccount);
+        friend.addFriendInDatabase();
+        friends.add(friend);
+        setupFriendsList();
     }//GEN-LAST:event_sendButtonActionPerformed
+
+    private void addReceiverButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addReceiverButtonActionPerformed
+        Friends friend = getSelectedFriend();
+        String toString = toField.getText();
+        if(toString.contains(friend.getEmailAddress())){
+            return;
+        }
+        if(toString.isEmpty()){
+            toField.setText(friend.getEmailAddress());
+        }else{
+            toField.setText(toString+";"+friend.getEmailAddress());
+        }
+    }//GEN-LAST:event_addReceiverButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -342,6 +424,13 @@ public class MainFrame extends javax.swing.JFrame {
             java.awt.EventQueue.invokeLater(() -> {
                 MainFrame frame = new MainFrame(loginSignal);
                 frame.setLocationRelativeTo(null);
+                frame.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        DatabaseHandler.getInstance().closeConnection();
+                        super.windowClosing(e);
+                    }
+                });
                 frame.setVisible(true);
             });
             

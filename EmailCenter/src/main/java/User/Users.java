@@ -5,6 +5,7 @@
  */
 package User;
 
+import Database.DatabaseHandler;
 import Exceptions.LoginException;
 import Security.Security;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * @author Dragos-Alexandru
  */
-public final class User {
+public final class Users {
     
     private List<Accounts> accounts;
     
@@ -23,30 +24,34 @@ public final class User {
     
     private boolean loggedIn = false;
 
-    public User(String username, String password) {
+    public Users(String username, String password) {
         this.username = username;
         this.unhasedPassword = password;
         this.password = Security.hashPassword(password);
         accounts = getAccountsFromDB();
         for(Accounts aux:accounts){
-            System.out.println(aux.getEmail()+" "+aux.getPassword());
+            System.out.println(aux.getEmailAddress()+" "+aux.getPassword());
         }
     }
     
     public boolean checkAvailable(){
-        return Database.DatabaseHandler.getInstance().checkUserForLogin(this);
+        return DatabaseHandler.getInstance().checkUserForLogin(this);
     }
     
     public boolean registerUser(){
-        return Database.DatabaseHandler.getInstance().registerUser(this);
+        return DatabaseHandler.getInstance().registerUser(this);
     }
     
-    public void addAccount(Accounts account){
-        accounts.add(account);
+    public void addAccount(Accounts toBeAdded){
+        accounts.add(toBeAdded);
+    }
+    
+    public void deleteAccount(Accounts toBeDeleted){
+        accounts.remove(toBeDeleted);
     }
     
     private List<Accounts> getAccountsFromDB(){
-        return Database.DatabaseHandler.getInstance().getAccountsForUser(this);
+        return DatabaseHandler.getInstance().getAccountsForUser(this);
     }
 
     public String getUsername() {
