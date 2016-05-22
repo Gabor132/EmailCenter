@@ -26,10 +26,8 @@ public abstract class Security {
     public static String hashPassword(String input){
         
         String output = "";
-        String salt = "asjchaley1y2y3rkn";
-        String pepper = "dajskhd8129hdiuwh189";
         
-        output += salt+pepper+input+salt+pepper;
+        output += input;
         
         try {
             MessageDigest boillingPot = MessageDigest.getInstance("SHA-256");

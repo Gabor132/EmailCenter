@@ -29,31 +29,9 @@ public final class Users {
         this.unhasedPassword = password;
         this.password = Security.hashPassword(password);
         accounts = getAccountsFromDB();
-        for(Accounts aux:accounts){
-            System.out.println(aux.getEmailAddress()+" "+aux.getPassword());
-        }
-    }
-    
-    public boolean checkAvailable(){
-        return DatabaseHandler.getInstance().checkUserForLogin(this);
-    }
-    
-    public boolean registerUser(){
-        return DatabaseHandler.getInstance().registerUser(this);
-    }
-    
-    public void addAccount(Accounts toBeAdded){
-        accounts.add(toBeAdded);
-    }
-    
-    public void deleteAccount(Accounts toBeDeleted){
-        accounts.remove(toBeDeleted);
-    }
-    
-    private List<Accounts> getAccountsFromDB(){
-        return DatabaseHandler.getInstance().getAccountsForUser(this);
     }
 
+    /* GETTERE */
     public String getUsername() {
         return username;
     }
@@ -66,14 +44,33 @@ public final class Users {
         return unhasedPassword;
     }
     
+    /* VERIFICARI IN BAZA DE DATE */
+    public boolean checkAvailable(){
+        return DatabaseHandler.getInstance().checkUserForLogin(this);
+    }
+    
+    public boolean registerUser(){
+        return DatabaseHandler.getInstance().registerUser(this);
+    }
+    
+    /* MANIPULARE ACCOUNTS */
+    public void addAccount(Accounts toBeAdded){
+        accounts.add(toBeAdded);
+    }
+    
+    public void deleteAccount(Accounts toBeDeleted){
+        accounts.remove(toBeDeleted);
+    }
+    
     public List<Accounts> getAccounts() throws LoginException{
         return accounts;
     }
-
-    public void setAccounts(List<Accounts> accounts) {
-        this.accounts = accounts;
+    
+    private List<Accounts> getAccountsFromDB(){
+        return DatabaseHandler.getInstance().getAccountsForUser(this);
     }
     
+    /* METODE SPECIFICE CLASEI */
     public void setLoggedIn(boolean value){
         loggedIn = value;
     }
@@ -81,4 +78,11 @@ public final class Users {
     public boolean isLoggedIn(){
         return loggedIn;
     }
+
+    @Override
+    public String toString() {
+        return "Users{" + "accounts=" + accounts + ", username=" + username + ", password=" + password + '}';
+    }
+    
+    
 }

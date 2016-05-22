@@ -8,11 +8,17 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="New Email"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="newMailMenuMouseClicked"/>
+          </Events>
         </Menu>
         <Menu class="javax.swing.JMenu" name="historyMenu">
           <Properties>
             <Property name="text" type="java.lang.String" value="View History"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="historyMenuMouseClicked"/>
+          </Events>
         </Menu>
         <Menu class="javax.swing.JMenu" name="signOutMenu">
           <Properties>
@@ -71,48 +77,51 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="emailContentScroll" pref="0" max="32767" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
-                      <Component id="subjectField" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="sendButton" min="-2" pref="104" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="attachFileButton" min="-2" pref="104" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="detachFileButton" min="-2" pref="104" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="addFriendButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="deleteFriendButton" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
                               <Component id="currentAccountLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="accountBox" max="32767" attributes="0"/>
+                              <Component id="accountBox" min="-2" pref="269" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="addAccountButton" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="sendButton" min="-2" pref="104" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="attachFileButton" min="-2" pref="104" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="detachFileButton" min="-2" pref="104" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="130" max="32767" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="21" pref="21" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="subjectLabel" min="-2" max="-2" attributes="0"/>
-                                  <Component id="toLabel" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="toLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="toField" min="-2" pref="393" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="subjectLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="subjectField" min="-2" pref="393" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="toField" max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="addReceiverButton" alignment="1" min="-2" pref="105" max="-2" attributes="0"/>
-                          <Component id="deleteAccountButton" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="deleteFriendButton" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="deleteAccountButton" pref="110" max="32767" attributes="0"/>
+                          <Component id="addReceiverButton" max="32767" attributes="0"/>
                       </Group>
                   </Group>
+                  <Component id="emailContentScroll" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="friendsScroll" min="-2" pref="183" max="-2" attributes="0"/>
@@ -125,7 +134,7 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
+                  <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="accountBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="currentAccountLabel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -151,6 +160,7 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="detachFileButton" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="deleteFriendButton" alignment="3" max="32767" attributes="0"/>
+                              <Component id="addFriendButton" alignment="3" max="32767" attributes="0"/>
                           </Group>
                           <Component id="sendButton" max="32767" attributes="0"/>
                       </Group>
@@ -189,7 +199,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JEditorPane" name="emailContentArea">
+        <Component class="javax.swing.JEditorPane" name="messagesContentArea">
         </Component>
       </SubComponents>
     </Container>
@@ -221,6 +231,9 @@
           <StringArray count="0"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="accountBoxActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
@@ -270,6 +283,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addAccountButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="addFriendButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Add Friend"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addFriendButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

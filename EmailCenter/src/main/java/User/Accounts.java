@@ -26,24 +26,10 @@ public class Accounts {
         this.emailAddress = email;
         this.password = password;
         this.user = user;
-        this.friends = getFriendsFromDB();
-        for(Friends aux:friends){
-            System.out.println(aux.getEmailAddress());
-        }
-    }
-    
-    public boolean addAccountInDatabase(){
-        return DatabaseHandler.getInstance().addAccountToUser(this);
-    }
-    
-    public boolean deleteAccountFromDatabase(){
-        return DatabaseHandler.getInstance().deleteAccountFromUser(this);
-    }
-    
-    private List<Friends> getFriendsFromDB(){
-        return DatabaseHandler.getInstance().getFriendsForAccount(this);
+        this.friends = getFriendsFromDatabase();
     }
 
+    /* GETTERE */
     public String getEmailAddress() {
         return emailAddress;
     }
@@ -56,6 +42,16 @@ public class Accounts {
         return user;
     }
     
+    /* VERIFICARI IN BAZA DE DATE */
+    public boolean addAccountInDatabase(){
+        return DatabaseHandler.getInstance().addAccountToUser(this);
+    }
+    
+    public boolean deleteAccountFromDatabase(){
+        return DatabaseHandler.getInstance().deleteAccountFromUser(this);
+    }
+    
+    /* MANIPULARE FRIENDS */
     public void addFriend(Friends toBeAdded){
         friends.add(toBeAdded);
     }
@@ -68,6 +64,11 @@ public class Accounts {
         return friends;
     }
     
+    private List<Friends> getFriendsFromDatabase(){
+        return DatabaseHandler.getInstance().getFriendsForAccount(this);
+    }
+    
+    /* METODE SPECIFICE CLASEI */
     public String getDecryptedPassword(){
         return Security.decrypt(password, user.getUnhasedPassword());
     }
@@ -95,10 +96,14 @@ public class Accounts {
         if (!Objects.equals(this.emailAddress, other.emailAddress)) {
             return false;
         }
-        if (!Objects.equals(this.password, other.password)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.password, other.password);
     }
+
+    @Override
+    public String toString() {
+        return "Accounts{" + "emailAddress=" + emailAddress + ", password=" + password + ", user=" + user + ", friends=" + friends + '}';
+    }
+    
+    
     
 }
