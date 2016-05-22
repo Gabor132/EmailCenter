@@ -365,7 +365,7 @@ public class MainFrame extends javax.swing.JFrame {
         for(Friends aux:friends){
             if(aux.getEmailAddress().equals(toField.getText())){
                 Messages newMessage = new Messages(subjectField.getText(), 
-                        messagesContentArea.getText(), Calendar.getInstance().toString(), aux);
+                        messagesContentArea.getText(), Calendar.getInstance().getTime().toString(), aux);
                 newMessage.addMessageToDatabase();
                 aux.addMessage(newMessage);
                 return;
@@ -375,7 +375,7 @@ public class MainFrame extends javax.swing.JFrame {
         friend.addFriendInDatabase();
         friends.add(friend);
         Messages newMessage = new Messages(subjectField.getText(), 
-            messagesContentArea.getText(), Calendar.getInstance().toString(), friend);
+            messagesContentArea.getText(), Calendar.getInstance().getTime().toString(), friend);
         newMessage.addMessageToDatabase();
         friend.addMessage(newMessage);
         setupFriendsList();
@@ -453,7 +453,10 @@ public class MainFrame extends javax.swing.JFrame {
         
         if(args.length > 0){
             if(args[0].equals("db_test")){
-                DatabaseHandler.getInstance();
+                DatabaseHandler.getInstance(true);
+                return ;
+            }else if(args[0].equals("db_test_local")){
+                DatabaseHandler.getInstance(false);
                 return ;
             }
         }
@@ -481,7 +484,7 @@ public class MainFrame extends javax.swing.JFrame {
                 frame.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosing(WindowEvent e) {
-                        DatabaseHandler.getInstance().closeConnection();
+                        DatabaseHandler.getInstance(true).closeConnection();
                         super.windowClosing(e);
                     }
                 });

@@ -6,9 +6,11 @@
 package User;
 
 import Database.DatabaseHandler;
+import Email.SMTPServer;
 import Security.Security;
 import java.util.List;
 import java.util.Objects;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -20,6 +22,8 @@ public class Accounts {
     private final String password;
     private final Users user;
     
+    private final SMTPServer smtpServer;
+    
     private final List<Friends> friends;
 
     public Accounts(String email, String password, Users user) {
@@ -27,6 +31,7 @@ public class Accounts {
         this.password = password;
         this.user = user;
         this.friends = getFriendsFromDatabase();
+        this.smtpServer = SMTPServer.getApropriateSMTPServer(email);
     }
 
     /* GETTERE */
@@ -42,13 +47,17 @@ public class Accounts {
         return user;
     }
     
+    public SMTPServer getSMTPServer(){
+        return smtpServer;
+    }
+    
     /* VERIFICARI IN BAZA DE DATE */
     public boolean addAccountInDatabase(){
-        return DatabaseHandler.getInstance().addAccountToUser(this);
+        return DatabaseHandler.getInstance(true).addAccountToUser(this);
     }
     
     public boolean deleteAccountFromDatabase(){
-        return DatabaseHandler.getInstance().deleteAccountFromUser(this);
+        return DatabaseHandler.getInstance(true).deleteAccountFromUser(this);
     }
     
     /* MANIPULARE FRIENDS */
@@ -65,7 +74,7 @@ public class Accounts {
     }
     
     private List<Friends> getFriendsFromDatabase(){
-        return DatabaseHandler.getInstance().getFriendsForAccount(this);
+        return DatabaseHandler.getInstance(true).getFriendsForAccount(this);
     }
     
     /* METODE SPECIFICE CLASEI */
