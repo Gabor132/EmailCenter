@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package User;
 
 import Database.DatabaseHandler;
-import Exceptions.LoginException;
 import Security.Security;
 import java.util.List;
 
@@ -16,7 +10,7 @@ import java.util.List;
  */
 public final class Users {
     
-    private List<Accounts> accounts;
+    private final List<Accounts> accounts;
     
     private final String username;
     private final String password;
@@ -46,11 +40,11 @@ public final class Users {
     
     /* VERIFICARI IN BAZA DE DATE */
     public boolean checkAvailable(){
-        return DatabaseHandler.getInstance(true).checkUserForLogin(this);
+        return DatabaseHandler.getInstance(true, false).checkUserForLogin(this);
     }
     
     public boolean registerUser(){
-        return DatabaseHandler.getInstance(true).registerUser(this);
+        return DatabaseHandler.getInstance(true, false).registerUser(this);
     }
     
     /* MANIPULARE ACCOUNTS */
@@ -62,12 +56,12 @@ public final class Users {
         accounts.remove(toBeDeleted);
     }
     
-    public List<Accounts> getAccounts() throws LoginException{
+    public List<Accounts> getAccounts(){
         return accounts;
     }
     
     private List<Accounts> getAccountsFromDB(){
-        return DatabaseHandler.getInstance(true).getAccountsForUser(this);
+        return DatabaseHandler.getInstance(true, false).getAccountsForUser(this);
     }
     
     /* METODE SPECIFICE CLASEI */
