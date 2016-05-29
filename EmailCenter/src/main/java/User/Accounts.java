@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package User;
 
 import Database.DatabaseHandler;
@@ -10,7 +5,6 @@ import Email.SMTPServer;
 import Security.Security;
 import java.util.List;
 import java.util.Objects;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -53,11 +47,11 @@ public class Accounts {
     
     /* VERIFICARI IN BAZA DE DATE */
     public boolean addAccountInDatabase(){
-        return DatabaseHandler.getInstance(true).addAccountToUser(this);
+        return DatabaseHandler.getInstance(true, false).addAccountToUser(this);
     }
     
     public boolean deleteAccountFromDatabase(){
-        return DatabaseHandler.getInstance(true).deleteAccountFromUser(this);
+        return DatabaseHandler.getInstance(true, false).deleteAccountFromUser(this);
     }
     
     /* MANIPULARE FRIENDS */
@@ -74,7 +68,7 @@ public class Accounts {
     }
     
     private List<Friends> getFriendsFromDatabase(){
-        return DatabaseHandler.getInstance(true).getFriendsForAccount(this);
+        return DatabaseHandler.getInstance(true, false).getFriendsForAccount(this);
     }
     
     /* METODE SPECIFICE CLASEI */

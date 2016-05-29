@@ -5,19 +5,24 @@
  */
 package Interface;
 
+import Converter.ByteSizes;
 import Email.EmailSender;
 import Database.DatabaseHandler;
 import User.Accounts;
 import User.Friends;
 import User.Messages;
 import User.Users;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
@@ -28,6 +33,11 @@ public class MainFrame extends javax.swing.JFrame {
     private static Users loggedInUser = null;
     
     private final Object loginSignal;
+    private final String defaultAttachedFileLabel = "No file has been attached";
+    private File attachedFile = null;
+    
+    private final Color IS_ATTACHED_COLOR = new Color(255, 0, 0);
+    private final Color IS_NOT_ATTACHED_COLOR = new Color(0, 0, 255);
     
     /**
      * Creates new form MainFrame
@@ -115,6 +125,8 @@ public class MainFrame extends javax.swing.JFrame {
         deleteAccountButton = new javax.swing.JButton();
         addAccountButton = new javax.swing.JButton();
         addFriendButton = new javax.swing.JButton();
+        attachedFileLabel = new javax.swing.JLabel();
+        friendsListLabel = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         newMailMenu = new javax.swing.JMenu();
         historyMenu = new javax.swing.JMenu();
@@ -142,8 +154,18 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         attachFileButton.setText("Attach File");
+        attachFileButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                attachFileButtonActionPerformed(evt);
+            }
+        });
 
-        detachFileButton.setText("Dettach File");
+        detachFileButton.setText("Detach File");
+        detachFileButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                detachFileButtonActionPerformed(evt);
+            }
+        });
 
         accountBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -192,6 +214,11 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        attachedFileLabel.setForeground(IS_NOT_ATTACHED_COLOR);
+        attachedFileLabel.setText("No file has been attached");
+
+        friendsListLabel.setText("Friends list");
+
         newMailMenu.setText("New Email");
         newMailMenu.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -226,11 +253,13 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(sendButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(attachFileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(attachFileButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(detachFileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(detachFileButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(attachedFileLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(addFriendButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -260,21 +289,24 @@ public class MainFrame extends javax.swing.JFrame {
                             .addComponent(addReceiverButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(emailContentScroll))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(friendsScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(friendsScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(friendsListLabel))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(accountBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(currentAccountLabel)
+                    .addComponent(deleteAccountButton)
+                    .addComponent(addAccountButton)
+                    .addComponent(friendsListLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(accountBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(currentAccountLabel)
-                            .addComponent(deleteAccountButton)
-                            .addComponent(addAccountButton))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(toField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(toLabel)
@@ -287,12 +319,14 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(emailContentScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(attachFileButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(detachFileButton)
                                 .addComponent(deleteFriendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(addFriendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(attachFileButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(detachFileButton)
+                                .addComponent(attachedFileLabel))))
                     .addComponent(friendsScroll))
                 .addContainerGap())
         );
@@ -355,34 +389,87 @@ public class MainFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please add some content", "Send Email", JOptionPane.INFORMATION_MESSAGE);
             return ;
         }
-        if(!EmailSender.sendMessage(selectedAccount, subjectField.getText(),
-                toField.getText(), messagesContentArea.getText())){
-            return;
-        }
         
-        JOptionPane.showMessageDialog(null, "Email was sent succesfully", "Send Email", JOptionPane.INFORMATION_MESSAGE);
-        List<Friends> friends = selectedAccount.getFriends();
-        for(Friends aux:friends){
-            if(aux.getEmailAddress().equals(toField.getText())){
-                Messages newMessage = new Messages(subjectField.getText(), 
-                        messagesContentArea.getText(), Calendar.getInstance().getTime().toString(), aux);
-                newMessage.addMessageToDatabase();
-                aux.addMessage(newMessage);
-                return;
+        String[] emails = toField.getText().split("; ");
+        boolean[] succesfull = new boolean[emails.length];
+        for(int i = 0; i < emails.length; i++){
+            if(attachedFile == null){
+                succesfull[i] = EmailSender.sendMessage(selectedAccount, subjectField.getText(),
+                        emails[i], messagesContentArea.getText());
+            }else{
+                succesfull[i] = EmailSender.sendMessage(selectedAccount, subjectField.getText(),
+                        emails[i], messagesContentArea.getText(), attachedFile);
             }
         }
-        Friends friend = new Friends(toField.getText(), selectedAccount);
-        friend.addFriendInDatabase();
-        friends.add(friend);
-        Messages newMessage = new Messages(subjectField.getText(), 
-            messagesContentArea.getText(), Calendar.getInstance().getTime().toString(), friend);
-        newMessage.addMessageToDatabase();
-        friend.addMessage(newMessage);
+        String failed = "";
+        for(int i = 0; i < emails.length; i++){
+            if(!succesfull[i]){
+                failed += emails[i] + " ";
+            }
+        }
+        if(failed.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Email was sent succesfully", "Send Email", JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showMessageDialog(null, "Email failed for " + failed,
+                    "Send Email", JOptionPane.INFORMATION_MESSAGE);
+        }
+        List<Friends> friends = selectedAccount.getFriends();
+        boolean[] friendExists = new boolean[emails.length];
+        for(boolean auxB : friendExists){
+            auxB = false;
+        }
+        for(Friends aux:friends){
+            for(int i = 0; i < emails.length; i++){
+                if(aux.getEmailAddress().equals(emails[i])){
+                    friendExists[i] = true;
+                    Messages newMessage;
+                    if(attachedFile == null){
+                        newMessage = new Messages(subjectField.getText(), 
+                                messagesContentArea.getText(),
+                                Calendar.getInstance().getTime().toString(),
+                                null, null, aux);
+                    }else{
+                        newMessage = new Messages(subjectField.getText(), 
+                            messagesContentArea.getText(),
+                            Calendar.getInstance().getTime().toString(),
+                            attachedFile.getName(), ByteSizes.getSize(attachedFile.length()), aux);
+                    }
+                    newMessage.addMessageToDatabase();
+                    aux.addMessage(newMessage);
+                }
+            }
+        }
+        for(int i = 0; i < emails.length; i++){
+            if(!friendExists[i]){
+                Friends friend = new Friends(emails[i], selectedAccount);
+                friend.addFriendInDatabase();
+                friends.add(friend);
+                Messages newMessage;
+                if(attachedFile == null){
+                    newMessage = new Messages(subjectField.getText(), 
+                            messagesContentArea.getText(),
+                            Calendar.getInstance().getTime().toString(),
+                            null, null, friend);
+                }else{
+                    newMessage = new Messages(subjectField.getText(), 
+                        messagesContentArea.getText(),
+                        Calendar.getInstance().getTime().toString(),
+                        attachedFile.getName(), ByteSizes.getSize(attachedFile.length()), friend);
+                }
+                newMessage.addMessageToDatabase();
+                friend.addMessage(newMessage);
+            }
+        }
         setupFriendsList();
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void addReceiverButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addReceiverButtonActionPerformed
         Friends friend = getSelectedFriend();
+        if(friend == null){
+            JOptionPane.showMessageDialog(null, "No friend selected",
+                    "Send Email", JOptionPane.ERROR_MESSAGE);
+            return ;
+        }
         String toString = toField.getText();
         if(toString.contains(friend.getEmailAddress())){
             return;
@@ -426,8 +513,47 @@ public class MainFrame extends javax.swing.JFrame {
         toField.setText("");
         subjectField.setText("");
         messagesContentArea.setText("");
+        setAttachment(null);
     }//GEN-LAST:event_newMailMenuMouseClicked
 
+    private void attachFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attachFileButtonActionPerformed
+        JFileChooser attachmentChooser = new JFileChooser(new File(System.getProperty("user.home"), "Desktop"));
+        attachmentChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+        int result = attachmentChooser.showOpenDialog(this);
+        if(result == JFileChooser.APPROVE_OPTION){
+            File desiredFile = attachmentChooser.getSelectedFile();
+            System.out.println(ByteSizes.getSize(ByteSizes.ATTACMENT_LIMIT));
+            if(desiredFile.length() < ByteSizes.ATTACMENT_LIMIT){
+                setAttachment(desiredFile);
+            }else{
+                JOptionPane.showMessageDialog(null, "File is to big ("+ByteSizes.getSize(desiredFile.length())+"), must be smaller than 2 Mb",
+                        "Attach file", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_attachFileButtonActionPerformed
+
+    private void detachFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detachFileButtonActionPerformed
+        setAttachment(null);
+    }//GEN-LAST:event_detachFileButtonActionPerformed
+
+    /**
+     * Set's the given file as the attachment for the soon to be sent email
+     * @param toAttach 
+     * If toAttach is null, it detaches the current file
+     */
+    private void setAttachment(File toAttach){
+        if(toAttach != null){
+            attachedFile = toAttach;
+            attachedFileLabel.setText(attachedFile.getName()+"("+ByteSizes.getSize(attachedFile.length())+")");
+            attachedFileLabel.setForeground(IS_ATTACHED_COLOR);
+        }else{
+            attachedFile = null;
+            attachedFileLabel.setText(defaultAttachedFileLabel);
+            attachedFileLabel.setForeground(IS_NOT_ATTACHED_COLOR);
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -452,11 +578,19 @@ public class MainFrame extends javax.swing.JFrame {
         //</editor-fold>
         
         if(args.length > 0){
-            if(args[0].equals("db_test")){
-                DatabaseHandler.getInstance(true);
+            if(args[0].equals(DatabaseHandler.REMOTE_CONFIG)){
+                if(args.length > 1 && args[1].equals(DatabaseHandler.RESET_CONFIG)){
+                    DatabaseHandler.getInstance(true, true);
+                    return ;
+                }
+                DatabaseHandler.getInstance(true, false);
                 return ;
-            }else if(args[0].equals("db_test_local")){
-                DatabaseHandler.getInstance(false);
+            }else if(args[0].equals(DatabaseHandler.LOCAL_CONFIG)){
+                if(args.length > 1 && args[1].equals(DatabaseHandler.RESET_CONFIG)){
+                    DatabaseHandler.getInstance(false, true);
+                    return ;
+                }
+                DatabaseHandler.getInstance(false, false);
                 return ;
             }
         }
@@ -484,7 +618,7 @@ public class MainFrame extends javax.swing.JFrame {
                 frame.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosing(WindowEvent e) {
-                        DatabaseHandler.getInstance(true).closeConnection();
+                        DatabaseHandler.getInstance(true, false).closeConnection();
                         super.windowClosing(e);
                     }
                 });
@@ -507,12 +641,14 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton addFriendButton;
     private javax.swing.JButton addReceiverButton;
     private javax.swing.JButton attachFileButton;
+    private javax.swing.JLabel attachedFileLabel;
     private javax.swing.JLabel currentAccountLabel;
     private javax.swing.JButton deleteAccountButton;
     private javax.swing.JButton deleteFriendButton;
     private javax.swing.JButton detachFileButton;
     private javax.swing.JScrollPane emailContentScroll;
     private javax.swing.JList<String> friendsList;
+    private javax.swing.JLabel friendsListLabel;
     private javax.swing.JScrollPane friendsScroll;
     private javax.swing.JMenu historyMenu;
     private javax.swing.JMenuBar menuBar;
