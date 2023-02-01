@@ -17,8 +17,6 @@ import org.apache.commons.mail.SimpleEmail;
  */
 public abstract class EmailSender {
     
-    private static final String ATTACHMEMT_DESCRIPTION = "Email attachment";
-    
     /**
      * Method for sending a simple (just text) email
      * @param from
@@ -34,7 +32,7 @@ public abstract class EmailSender {
             email.setSmtpPort(from.getSMTPServer().port);
             email.setAuthenticator(new DefaultAuthenticator(from.getEmailAddress(),
                     from.getDecryptedPassword()));
-            email.setSSL(true);
+            email.setStartTLSEnabled(true);
             email.setFrom(from.getEmailAddress());
             email.setSubject(subject);
             email.setMsg(content);
@@ -65,7 +63,7 @@ public abstract class EmailSender {
             email.setSmtpPort(from.getSMTPServer().port);
             email.setAuthenticator(new DefaultAuthenticator(from.getEmailAddress(),
                     from.getDecryptedPassword()));
-            email.setSSL(true);
+            email.setStartTLSEnabled(true);
             email.addTo(to);
             email.setFrom(from.getEmailAddress());
             email.setSubject(subject);
