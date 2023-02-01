@@ -365,19 +365,16 @@ public class DatabaseHandler {
         }
         if(user_id != null){
             sqlQuery = " INSERT INTO ACCOUNTS (email, password, user_id) VALUES (?, ?, ?);";
-            int result = 0;
             try (PreparedStatement stmt = conn.prepareStatement(sqlQuery);){
 
                 stmt.setString(1, account.getEmailAddress());
                 stmt.setString(2, account.getPassword());
                 stmt.setInt(3, user_id);
 
-                result = stmt.executeUpdate();
+                return stmt.executeUpdate() == 1;
                 
             } catch (SQLException ex) {
                 System.err.println("Failed "+ex.getMessage());
-            }finally{
-                return result == 1;
             }
         }
         return false;
@@ -405,19 +402,16 @@ public class DatabaseHandler {
         }
         if(user_id != null){
             sqlQuery = " DELETE FROM ACCOUNTS WHERE lower(email) = lower(?) AND lower(password) = lower(?) AND user_id = ?;";
-            int result = 0;
             try (PreparedStatement stmt = conn.prepareStatement(sqlQuery);){
 
                 stmt.setString(1, account.getEmailAddress());
                 stmt.setString(2, account.getPassword());
                 stmt.setInt(3, user_id);
 
-                result = stmt.executeUpdate();
+                return stmt.executeUpdate() == 1;
                 
             } catch (SQLException ex) {
                 System.err.println("Failed "+ex.getMessage());
-            }finally{
-                return result == 1;
             }
         }
         return false;
@@ -481,18 +475,15 @@ public class DatabaseHandler {
         }
         if(account_id != null){
             sqlQuery = " INSERT INTO FRIENDS (email, account_id) VALUES (?, ?);";
-            int result = 0;
             try (PreparedStatement stmt = conn.prepareStatement(sqlQuery);){
 
                 stmt.setString(1, friend.getEmailAddress());
                 stmt.setInt(2, account_id);
 
-                result = stmt.executeUpdate();
+                return stmt.executeUpdate() == 1;
                 
             } catch (SQLException ex) {
                 System.err.println("Failed "+ex.getMessage());
-            }finally{
-                return result == 1;
             }
         }
         return false;
@@ -523,18 +514,15 @@ public class DatabaseHandler {
         }
         if(account_id != null){
             sqlQuery = " DELETE FROM FRIENDS WHERE lower(email) = lower(?) AND account_id = ?;";
-            int result = 0;
             try (PreparedStatement stmt = conn.prepareStatement(sqlQuery);){
 
                 stmt.setString(1, friend.getEmailAddress());
                 stmt.setInt(2, account_id);
 
-                result = stmt.executeUpdate();
+                return stmt.executeUpdate() == 1;
                 
             } catch (SQLException ex) {
                 System.err.println("Failed "+ex.getMessage());
-            }finally{
-                return result == 1;
             }
         }
         return false;
@@ -599,7 +587,6 @@ public class DatabaseHandler {
         if(friend_id != null){
             sqlQuery = " INSERT INTO MESSAGES (subject, content, attachment_name, attachment_size,"
                     + " send_date, friend_id) VALUES (?, ?, ?, ?, ?, ?);";
-            int result = 0;
             try (PreparedStatement stmt = conn.prepareStatement(sqlQuery);){
                 
                 stmt.setString(1, message.getSubject());
@@ -614,12 +601,10 @@ public class DatabaseHandler {
                 stmt.setString(5, message.getTimestamp());
                 stmt.setInt(6, friend_id);
 
-                result = stmt.executeUpdate();
+                return stmt.executeUpdate() == 1;
                 
             } catch (SQLException ex) {
                 System.err.println("Failed "+ex.getMessage());
-            }finally{
-                return result == 1;
             }
         }
         return false;
@@ -653,18 +638,15 @@ public class DatabaseHandler {
         }
         if(friend_id != null){
             sqlQuery = " DELETE FROM MESSAGES WHERE lower(email) = lower(?) AND friend_id = ?;";
-            int result = 0;
             try (PreparedStatement stmt = conn.prepareStatement(sqlQuery);){
 
                 stmt.setString(1, friend.getEmailAddress());
                 stmt.setInt(2, friend_id);
 
-                result = stmt.executeUpdate();
+                return stmt.executeUpdate() == 1;
                 
             } catch (SQLException ex) {
                 System.err.println("Failed "+ex.getMessage());
-            }finally{
-                return result == 1;
             }
         }
         return false;
