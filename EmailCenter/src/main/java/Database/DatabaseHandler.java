@@ -17,41 +17,68 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 
 /**
- *
+ * Singleton class meant to be used for all Database interactions
  * @author Dragos-Alexandru
  */
-public class DatabaseHandler {
+public final class DatabaseHandler {
+
+    // Singleton Instance //
     private static DatabaseHandler INSTANCE;
+
+    // Database Driver //
+    private static final String DEFAULT_JDBC_DRIVER = "com.mysql.jdbc.Driver";
     
-    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    
-    private static final String DB_URL_LOCAL = "jdbc:mysql://localhost/";
-    
-    private static final String USER_LOCAL = "root";
-    private static final String PASS_LOCAL = "";
-    private static final String DB_NAME_LOCAL = "emailcenter";
-    
-    private static final String DB_URL_REMOTE = "jdbc:mysql://sql7.freesqldatabase.com:3306/";
-    
-    private static final String USER_REMOTE = "sql7120529";
-    private static final String PASS_REMOTE = "uKIEiWexMe";
-    private static final String DB_NAME_REMOTE = "sql7120529";
-    
-    private final boolean IS_REMOTE;
+    // Database Properties //
+    // Environment Keys
+    public static final String URL_ENV_KEY = "EMAIL_CENTER_DB_URL";
+    public static final String USERNAME_ENV_KEY = "EMAIL_CENTER_DB_USER";
+    public static final String PASSWORD_ENV_KEY = "EMAIL_CENTER_DB_PASS";
+    public static final String DATABASE_NAME_ENV_KEY = "EMAIL_CENTER_DB_NAME";
+    // Default values
+    private static final String DEFAULT_URL = "jdbc:mysql://localhost/";
+    private static final String DEFAULT_USERNAME = "root";
+    private static final String DEFAULT_PASSWORD = "";
+    private static final String DEFAULT_DATABASE_NAME = "emailcenter";
+    // Environment provided values
+    private final String REMOTE_URL = EnvironmentHandler.GET_VARIABLE_BY_KEY(URL_ENV_KEY);
+    private final String REMOTE_USERNAME = EnvironmentHandler.GET_VARIABLE_BY_KEY(USERNAME_ENV_KEY);
+    private final String REMOTE_PASSWORD = EnvironmentHandler.GET_VARIABLE_BY_KEY(PASSWORD_ENV_KEY);
+    private final String REMOTE_DATABASE_NAME = EnvironmentHandler.GET_VARIABLE_BY_KEY(DATABASE_NAME_ENV_KEY);
+    // Used values
+    private final String URL;
+    private final String USERNAME;
+    private final String PASSWORD;
+    private final String DATABASE_NAME;
+
+    // Other properties //
+    private final String[] TABLE_NAMES = {"USERS", "ACCOUNTS", "FRIENDS", "MESSAGES"};
+    private Connection connection;
     
     public static final String LOCAL_CONFIG = "db_test_local";
     public static final String REMOTE_CONFIG = "db_test";
     public static final String RESET_CONFIG = "bjfotjsdfhew213das4";
-    
-    private final String[] TABLE_NAMES = {"USERS", "ACCOUNTS", "FRIENDS", "MESSAGES"};
-    
-    private Connection connection;
+
+    static final Logger logger = Logger.getLogger(DatabaseHandler.class.getName());
     
     private DatabaseHandler(boolean IS_REMOTE, boolean RESET_TABLES){
-        this.IS_REMOTE = IS_REMOTE;
+
+        if(IS_REMOTE) {
+            URL = REMOTE_URL;
+            USERNAME = REMOTE_USERNAME;
+            PASSWORD = REMOTE_PASSWORD;
+            DATABASE_NAME = REMOTE_DATABASE_NAME;
+        } else {
+            URL = DEFAULT_URL;
+            USERNAME = DEFAULT_USERNAME;
+            PASSWORD = DEFAULT_PASSWORD;
+            DATABASE_NAME = DEFAULT_DATABASE_NAME;
+        }
+
         createConnection();
         createDatabase();
         if(!checkTables()){
@@ -65,14 +92,9 @@ public class DatabaseHandler {
     private void createConnection(){
         connection = null;
         try {
-            Class.forName(JDBC_DRIVER);
-            if(IS_REMOTE){
-                System.out.println("Connectiong to remote database");
-                connection = DriverManager.getConnection(DB_URL_REMOTE, USER_REMOTE, PASS_REMOTE);
-            }else{
-                System.out.println("Connectiong to local database");
-                connection = DriverManager.getConnection(DB_URL_LOCAL, USER_LOCAL, PASS_LOCAL);
-            }
+            Class.forName(DEFAULT_JDBC_DRIVER);
+            logger.info(String.format("Connecting to %s", URL));
+            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             System.out.println("Succesfully connected to database");
         } catch (SQLException | ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(null, " Failed to connect to database"
@@ -84,11 +106,7 @@ public class DatabaseHandler {
     private Connection getConnection(){
         try {
             try (Statement stmt = connection.createStatement()) {
-                if(IS_REMOTE){
-                    stmt.executeUpdate("USE "+DB_NAME_REMOTE+";");
-                }else{
-                    stmt.executeUpdate("USE "+DB_NAME_LOCAL+";");
-                }
+                stmt.executeUpdate("USE "+DATABASE_NAME+";");
             }
         } catch (SQLException ex) {
             System.err.println("Failed "+ex.getMessage());
@@ -119,7 +137,7 @@ public class DatabaseHandler {
             conn = getConnection();
             stmt = conn.createStatement();
 
-            String sql = "CREATE DATABASE " + DB_NAME_REMOTE + "\n" +
+            String sql = "CREATE DATABASE " + DATABASE_NAME + "\n" +
                     " DEFAULT CHARACTER SET utf8\n" +
                     " DEFAULT COLLATE utf8_general_ci;";
             
