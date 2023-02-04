@@ -65,9 +65,16 @@ public final class DatabaseHandler {
 
     static final Logger logger = Logger.getLogger(DatabaseHandler.class.getName());
     
-    private DatabaseHandler(boolean IS_REMOTE, boolean RESET_TABLES){
+    /**
+     * Singleton class meant to handle all interactions with the Database
+     * @param isRemote a boolean value use to determine if the connection should be established
+     * with the remote database or the local one of the runtime machine
+     * @param withTableResetting a boolean value used to determine if the database tables should
+     * be reset
+     */
+    private DatabaseHandler(boolean isRemote, boolean withTableResetting){
 
-        if(IS_REMOTE) {
+        if(isRemote) {
             URL = REMOTE_URL;
             USERNAME = REMOTE_USERNAME;
             PASSWORD = REMOTE_PASSWORD;
@@ -83,7 +90,7 @@ public final class DatabaseHandler {
         createDatabase();
         if(!checkTables()){
             createTables();
-        }else if(RESET_TABLES){
+        }else if(withTableResetting){
             deleteTables();
             createTables();
         }
@@ -97,7 +104,7 @@ public final class DatabaseHandler {
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             System.out.println("Succesfully connected to database");
         } catch (SQLException | ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(null, " Failed to connect to database"
+            JOptionPane.showMessageDialog(null, " Failed to connect to database due to "
                     + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(-1);
         }
@@ -713,12 +720,47 @@ public final class DatabaseHandler {
         }
         return messages;
     }
-    
-    public static DatabaseHandler getInstance(boolean IS_REMOTE, boolean RESET_TABLES){
+
+    /**
+     * Default static function used for retrieving the instance of the singleton class.
+     * If no class instance has been instantiated before, the newly created one shall be
+     * connecting to the local runtime machine's database (not remote) and will not perform
+     * table resets
+     * @return global instance of DatabaseHandler
+     */
+    public static DatabaseHandler getInstance(){
         if(INSTANCE == null){
-            INSTANCE = new DatabaseHandler(IS_REMOTE, RESET_TABLES);
+            DatabaseHandler.createInstance(false, false);
         }
         return INSTANCE;
+    }
+
+    /**
+     * Static function used for retrieving the instance of the singleton class.
+     * @param isRemote a boolean value use to determine if the connection should be established
+     * with the remote database or the local one of the runtime machine
+     * @param withTableResetting a boolean value used to determine if the database tables should
+     * be reset
+     * @return global instance of DatabaseHandler
+     */
+    public static DatabaseHandler getInstance(boolean isRemote, boolean withTableResetting){
+        if(INSTANCE == null){
+            DatabaseHandler.createInstance(isRemote, withTableResetting);
+        }
+        return INSTANCE;
+    }
+
+    /**
+     * Static function for creating the Singleton instance
+     * @param isRemote a boolean value use to determine if the connection should be established
+     * with the remote database or the local one of the runtime machine
+     * @param withTableResetting a boolean value used to determine if the database tables should
+     * be reset
+     */
+    public static void createInstance(boolean isRemote, boolean withTableResetting){
+        if(INSTANCE == null){
+            INSTANCE = new DatabaseHandler(isRemote, withTableResetting);
+        }
     }
     
 }

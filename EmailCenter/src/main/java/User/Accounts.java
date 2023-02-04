@@ -47,11 +47,11 @@ public class Accounts {
     
     /* VERIFICARI IN BAZA DE DATE */
     public boolean addAccountInDatabase(){
-        return DatabaseHandler.getInstance(true, false).addAccountToUser(this);
+        return DatabaseHandler.getInstance().addAccountToUser(this);
     }
     
     public boolean deleteAccountFromDatabase(){
-        return DatabaseHandler.getInstance(true, false).deleteAccountFromUser(this);
+        return DatabaseHandler.getInstance().deleteAccountFromUser(this);
     }
     
     /* MANIPULARE FRIENDS */
@@ -68,7 +68,7 @@ public class Accounts {
     }
     
     private List<Friends> getFriendsFromDatabase(){
-        return DatabaseHandler.getInstance(true, false).getFriendsForAccount(this);
+        return DatabaseHandler.getInstance().getFriendsForAccount(this);
     }
     
     /* METODE SPECIFICE CLASEI */

@@ -33,11 +33,11 @@ public class Friends {
     
     /* VERIFICARI IN BAZA DE DATE */
     public boolean addFriendInDatabase(){
-        return DatabaseHandler.getInstance(true, false).addFriendToAccount(this);
+        return DatabaseHandler.getInstance().addFriendToAccount(this);
     }
     
     public boolean deleteFriendFromDatabase(){
-        return DatabaseHandler.getInstance(true, false).deleteFriendFromAccount(this);
+        return DatabaseHandler.getInstance().deleteFriendFromAccount(this);
     }
     
     /* MANIPULARE MESSAGES */
@@ -54,7 +54,7 @@ public class Friends {
     }
     
     private List<Messages> getMessagesFromDatabase(){
-        return DatabaseHandler.getInstance(true, false).getMessageFromFriend(this);
+        return DatabaseHandler.getInstance().getMessageFromFriend(this);
     }
     
     /* METODE SPECIFICE CLASEI */

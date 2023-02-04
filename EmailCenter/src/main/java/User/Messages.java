@@ -52,11 +52,11 @@ public class Messages {
     
     /* VERIFICARI IN BAZA DE DATE */
     public boolean addMessageToDatabase(){
-        return DatabaseHandler.getInstance(true, false).addMessageToFriend(this);
+        return DatabaseHandler.getInstance().addMessageToFriend(this);
     }
     
     public boolean deleteMessageToDatabase(){
-        return DatabaseHandler.getInstance(true, false).deleteMessageFromFriend(this);
+        return DatabaseHandler.getInstance().deleteMessageFromFriend(this);
     }
 
     /* METODE SPECIFICE CLASEI */

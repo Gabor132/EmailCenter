@@ -40,11 +40,11 @@ public final class Users {
     
     /* VERIFICARI IN BAZA DE DATE */
     public boolean checkAvailable(){
-        return DatabaseHandler.getInstance(true, false).checkUserForLogin(this);
+        return DatabaseHandler.getInstance().checkUserForLogin(this);
     }
     
     public boolean registerUser(){
-        return DatabaseHandler.getInstance(true, false).registerUser(this);
+        return DatabaseHandler.getInstance().registerUser(this);
     }
     
     /* MANIPULARE ACCOUNTS */
@@ -61,7 +61,7 @@ public final class Users {
     }
     
     private List<Accounts> getAccountsFromDB(){
-        return DatabaseHandler.getInstance(true, false).getAccountsForUser(this);
+        return DatabaseHandler.getInstance().getAccountsForUser(this);
     }
     
     /* METODE SPECIFICE CLASEI */
