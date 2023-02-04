@@ -12,6 +12,11 @@ import User.Accounts;
 import User.Friends;
 import User.Messages;
 import User.Users;
+import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import net.sourceforge.argparse4j.inf.Namespace;
+
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
@@ -19,6 +24,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -575,24 +581,34 @@ public class MainFrame extends javax.swing.JFrame {
         //</editor-fold>
         
         //</editor-fold>
-        
-        if(args.length > 0){
-            if(args[0].equals(DatabaseHandler.REMOTE_CONFIG)){
-                if(args.length > 1 && args[1].equals(DatabaseHandler.RESET_CONFIG)){
-                    DatabaseHandler.getInstance(true, true);
-                    return ;
-                }
-                DatabaseHandler.getInstance(true, false);
-                return ;
-            }else if(args[0].equals(DatabaseHandler.LOCAL_CONFIG)){
-                if(args.length > 1 && args[1].equals(DatabaseHandler.RESET_CONFIG)){
-                    DatabaseHandler.getInstance(false, true);
-                    return ;
-                }
-                DatabaseHandler.getInstance(false, false);
-                return ;
-            }
+
+
+        // COMMAND LINE ARGUMENTS SETUP
+
+        ArgumentParser parser = ArgumentParsers
+                                    .newFor("EmailCenter")
+                                    .build()
+                                    .defaultHelp(true)
+                                    .description("Send emails to various people");
+        parser.addArgument(DatabaseHandler.REMOTE_CONFIG)
+                .setDefault(true)
+                .help("Specify if the program should connect to remote database instance");
+        parser.addArgument(DatabaseHandler.RESET_CONFIG)
+                .setDefault(false)
+                .help("Specify if the program shoud reset the database tables");
+
+        Namespace arguments = null;
+        try {
+            arguments = parser.parseArgs(args);
+        } catch (ArgumentParserException ex) {
+            parser.handleError(ex);
+            System.exit(1);
         }
+
+        boolean isRemote = arguments.getBoolean(DatabaseHandler.REMOTE_CONFIG);
+        boolean withTableResetting = arguments.getBoolean(DatabaseHandler.RESET_CONFIG);
+
+        DatabaseHandler.createInstance(isRemote, withTableResetting);
         
         while(true){
             Object loginSignal = new Object();
